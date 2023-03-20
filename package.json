@@ -1,0 +1,75 @@
+{
+  "name": "pomo",
+  "productName": "pomo",
+  "version": "1.0.0",
+  "description": "Pomodoro Clock",
+  "main": "src/index.js",
+  "build": {
+    "appId": "com.example.pomo",
+    "icon": "src/assets/P.ico",
+    "productName": "Pomodoro",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis"
+    }
+  },
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\"",
+    "build": "electron-builder"
+  },
+  "keywords": [],
+  "author": {
+    "name": "TUNKSTUN",
+    "email": "johnwick4learning@gmail.com"
+  },
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "pomo"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "electron-drag": "^2.0.0",
+    "electron-open-link-in-browser": "^1.0.2",
+    "electron-reloader": "^1.2.3",
+    "electron-squirrel-startup": "^1.0.0",
+    "scripts": "^0.1.0"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.5",
+    "@electron-forge/maker-deb": "^6.0.5",
+    "@electron-forge/maker-rpm": "^6.0.5",
+    "@electron-forge/maker-squirrel": "^6.0.5",
+    "@electron-forge/maker-zip": "^6.0.5",
+    "electron": "^23.1.4",
+    "electron-builder": "^23.6.0"
+  }
+}

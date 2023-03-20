@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html class="">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pomodoro Timer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/renderer.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+
+    
+  </head>
+  <body>
+    <div class="titlebar top-0 left-0 w-screen h-2" />
+    <nav class="bg-transparent fixed top-0 left-0 right-0 z-10">
+      <div
+        class="flex items-center justify-between px-4 py-3 text-center w-screen"
+      >
+        <div class="flex justify-center text-center">
+          <button class="focus:outline-non text-2xl" onclick="showDiv()">
+            <i
+              id="time-setting"
+              class="fas fa-cog transition ease-in-out duration-500 hover:rotate-180"
+            ></i>
+          </button>
+        </div>
+        <h1
+          class="prevent-select flex text-xl transition ease-in-out duration-500 px-2 italic"
+        >
+          Pomodoro Timer
+        </h1>
+        <div class="flex items-center">
+          <input type="checkbox" id="toggle" class="toggle hidden" />
+          <label
+            for="toggle"
+            class="label flex items-center cursor-pointer rounded-full p-1 transition ease-in-out duration-500"
+          >
+            <div
+              class="w-12 h-6 rounded-full shadow-inner bg-gray-100 shadow-stone-400 transition ease-in-out duration-500"
+            ></div>
+            <div
+              class="w-6 h-6 bg-stone-700 rounded-full shadow-md absolute transition ease-in-out duration-500"
+            ></div>
+          </label>
+        </div>
+
+        <style>
+          .toggle:checked + .label > div:nth-child(2) {
+            transform: translateX(100%);
+            background-color: rgb(50 40 40);
+          }
+          .toggle:focus + .label > div {
+            outline: none;
+            boxshadow: 0 0 0 3px rgba(96, 165, 250, 0.5);
+          }
+          .toggle:checked:focus + .label > div {
+            boxshadow: 0 0 0 3px rgba(96, 165, 250, 0.5);
+          }
+          #popup {
+            z-index: 20;
+          }
+
+          #popup.hidden {
+            display: none;
+          }
+          /* Change the color of the thumb */
+          .slider-thumb-color::-webkit-slider-thumb {
+            background-color: #1c1917; /* Replace with your desired color */
+          }
+
+          .slider-thumb-color::-moz-range-thumb {
+            background-color: #1c1917; /* Replace with your desired color */
+          }
+
+          .slider-thumb-color::-ms-thumb {
+            background-color: #1c1917; /* Replace with your desired color */
+          }
+
+          /* Change the color of the thumb on hover */
+          .slider-thumb-color::-webkit-slider-thumb:hover {
+            background-color: #1c1917; /* Replace with your desired hover color */
+          }
+
+          .slider-thumb-color::-moz-range-thumb:hover {
+            background-color: #1c1917; /* Replace with your desired hover color */
+          }
+
+          .slider-thumb-color::-ms-thumb:hover {
+            background-color: #1c1917; /* Replace with your desired hover color */
+          }
+          .titlebar {
+            -webkit-user-select: none;
+            -webkit-app-region: drag;
+          }
+
+          .titlebar-button {
+            -webkit-app-region: no-drag;
+          }
+          .prevent-select {
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+          }
+        </style>
+      </div>
+    </nav>
+    <main
+      class="container mx-auto flex flex-col items-center justify-center h-screen"
+    >
+      <div
+        id="timer-25"
+        class="text-8xl font-bold my-12 transition ease-in-out duration-500 drop-shadow-md shadow-black"
+      >
+        25:00
+      </div>
+      <div class="flex">
+        <button
+          id="start-btn"
+          class="mx-2 py-2 px-4 bg-green-600 text-white rounded-lg text-2xl font-bold focus:outline-none transition ease-in-out duration-500 hover:bg-green-500 border hover:border-b-green-700 shadow-black hover:shadow-xl"
+        >
+          Start
+        </button>
+        <button
+          id="stop-btn"
+          class="mx-2 py-2 px-4 bg-red-600 text-white rounded-lg text-2xl font-bold focus:outline-none transition ease-in-out duration-500 hover:bg-red-500 border hover:border-b-red-700 shadow-black hover:shadow-xl"
+        >
+          Stop
+        </button>
+      </div>
+      <div
+        class="flex justify-between font-mono w-full fixed bottom-0 text-xs p-2 mb-1"
+        id="footer"
+      >
+        <span id="current-time"></span>
+        <a
+          target="_blank"
+          href="https://github.com/tunkstun"
+          class="transition ease-in-out duration-100 flex gap-2 prevent-select"
+          >Made with ❤️ by
+          <span
+            class="-rotate-3 transtion ease-in-out duration-300 hover:scale-105 hover:rotate-0 border border-stone-300 px-1 rounded"
+          >
+            Yahya</span
+          ></a
+        >
+      </div>
+    </main>
+    <!--settings float container-->
+    <div
+      id="popup"
+      class="fixed top-0 left-0 h-full w-full backdrop-blur-sm hidden z-10"
+    >
+      <div
+        class="absolute font-mono border border-stone-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-stone-900 text-stone-100 rounded-lg shadow-lg p-4 flex flex-col text-center items-center gap-3 z-10"
+      >
+        <span
+          class="flex absolute left-0 top-0 text-start text-stone-100 rounded-full w-6 h-6 p-2 m-2 text-md gap-1 cursor-pointer"
+          onclick="location.href='index.html'"
+          ><i class="fas fa-arrow-left text-md" id="back-btn"></i
+        ></span>
+        <hr />
+        <h2 class="text-2xl font-bold mb-4">Settings</h2>
+        <div>
+          <h1>Timer Duration | 25 min+</h1>
+          <div>
+            <p id="time-change">0</p>
+            <input
+              type="range"
+              name="timer"
+              id="timer"
+              min="1"
+              max="10"
+              step="1"
+              value="1"
+              oninput="updateTimerValue(this.value)"
+              class="appearance-none w-full h-3 bg-gray-300 rounded-md outline-none cursor-pointer hover:bg-gray-400 active:bg-blue-300 transition-colors"
+              style="background-color: #292524"
+            />
+          </div>
+        </div>
+        <button
+          onclick="saveSettings()"
+          id="save-btn"
+          class="px-2 py-1 rounded-lg transition ease-in-out duration-500 hover:bg-stone-200 border hover:border-b-black shadow-black hover:shadow-xl hover:text-stone-900"
+        >
+          Save
+        </button>
+        <hr class="bg-stone-900 w-full" />
+        <h1 class="text-xl text-center items-center justify-center">Connect</h1>
+        <div
+          class="flex-wrap flex gap-3 items-center justify-center p-2 bg-stone-100 w-full h-auto text-stone-900 rounded m-2 shadow-inner"
+        >
+          <a href="https://www.instagram.com/solo_perfecto24" target="_blank"
+            ><img
+              src="https://img.icons8.com/fluency/48/null/instagram-new.png"
+              alt="instagram"
+              class="drop-shadow-lg transition ease-in-out duration-500 hover:scale-110" /></a
+          ><a href="https://www.linkedin.com/in/yahya24" target="_blank"
+            ><img
+              src="https://img.icons8.com/color/48/null/linkedin-2--v1.png"
+              alt="linkedin"
+              class="w-10 drop-shadow-lg transition ease-in-out duration-500 hover:scale-110"
+          /></a>
+        </div>
+        <h1 class="text-xs font-mono">Email: johnwick4learning@gmail.com</h1>
+      </div>
+      <audio id="alarm" src="assets/mi_beep.mp3"></audio>
+    </div>
+    <script>
+      function showDiv() {
+        var div = document.getElementById("myDiv");
+        if (div.style.display === "none") {
+          div.style.display = "block";
+        } else {
+          div.style.display = "none";
+        }
+      }
+      const popup = document.getElementById("popup");
+      const timeSettingBtn = document.getElementById("time-setting");
+      const savebtn = document.getElementById("save-btn");
+      const backbtn = document.getElementById("back-btn");
+
+      savebtn.addEventListener("click", function () {
+        popup.classList.add("hidden");
+      });
+      backbtn.addEventListener("click", function () {
+        popup.classList.add("hidden");
+      });
+
+      timeSettingBtn.addEventListener("click", function () {
+        popup.classList.remove("hidden");
+      });
+
+      const toggleSwitch = document.querySelector(".toggle");
+      const body = document.querySelector("html");
+      const toggleText = document.querySelector(".label");
+      const togglePopup = document.querySelector(".popup");
+
+      const isDarkMode = localStorage.getItem("isDarkMode") === "true";
+      if (isDarkMode) {
+        body.classList.add("bg-stone-900");
+        body.classList.add("text-stone-100");
+        body.classList.add("drop-shadow-md");
+        body.classList.add("shadow-black");
+
+        toggleSwitch.checked = true;
+      }
+
+      toggleSwitch.addEventListener("click", function () {
+        body.classList.toggle("bg-stone-900");
+        body.classList.toggle("text-stone-100");
+        body.classList.add("drop-shadow-lg");
+        body.classList.add("shadow-white");
+
+        // Save dark mode state to local storage
+        localStorage.setItem("isDarkMode", toggleSwitch.checked);
+      });
+      const timerDisplay = document.getElementById("timer-25");
+      const startBtn = document.getElementById("start-btn");
+      const stopBtn = document.getElementById("stop-btn");
+      const currentTime = document.getElementById("current-time");
+      const slider = document.getElementById("timer");
+      let breakTimeLeft = 300; // 5 minutes in seconds
+      let isBreakTime = false;
+      let intervalId;
+      let isRunning = false;
+      let timeLeft = slider.value * 25 * 60;
+
+     function displayTimeLeft() {
+  let display;
+  if (timeLeft < 3600) {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    display = `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
+  } else {
+    const hours = Math.floor(timeLeft / 3600);
+    const minutes = Math.floor((timeLeft % 3600) / 60);
+    const seconds = timeLeft % 60;
+    display = `${hours.toString().padStart(2, "")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  }
+  timerDisplay.textContent = display;
+}
+
+
+      function IntervalTime() {
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          alert("Time's up!");
+          return;
+        }
+      }
+
+      slider.addEventListener("change", () => {
+        timeLeft = slider.value * 25 * 60;
+        displayTimeLeft();
+        saveSettings();
+      });
+
+      function startTimer() {
+        isRunning = true;
+        startBtn.textContent = "Pause";
+        intervalId = setInterval(() => {
+          if (!isBreakTime) {
+            timeLeft--;
+            displayTimeLeft();
+            if (timeLeft === 0) {
+              clearInterval(intervalId);
+              isRunning = false;
+              startBtn.textContent = "Start";
+              let i = 0;
+              const interval = setInterval(() => {
+                document.getElementById("alarm").play();
+                i++;
+                if (i >= 10) {
+                  clearInterval(interval);
+                }
+              }, 800);
+              isBreakTime = true;
+              timeLeft = breakTimeLeft;
+              displayTimeLeft();
+              IntervalTime();
+            }
+          } else {
+            breakTimeLeft--;
+            displayTimeLeft();
+            if (breakTimeLeft === 0) {
+              clearInterval(intervalId);
+              isRunning = false;
+              startBtn.textContent = "Start";
+              let i = 0;
+              const interval = setInterval(() => {
+                document.getElementById("alarm").play();
+                i++;
+                if (i >= 10) {
+                  clearInterval(interval);
+                }
+              }, 800);
+              isBreakTime = false;
+              timeLeft = 1500;
+              displayTimeLeft();
+              IntervalTime();
+            }
+          }
+        }, 1000);
+      }
+
+      function pauseTimer() {
+        isRunning = false;
+        startBtn.textContent = "Start";
+        clearInterval(intervalId);
+      }
+
+      function resetTimer() {
+        isRunning = false;
+        startBtn.textContent = "Start";
+        clearInterval(intervalId);
+        timeLeft = slider.value * 25 * 60;
+        displayTimeLeft();
+      }
+
+      startBtn.addEventListener("click", () => {
+        if (isRunning) {
+          pauseTimer();
+        } else {
+          if (timeLeft > 0) {
+            startTimer();
+          } else {
+            // Timer has already reached 00:00
+            // Reset the timer and start again
+            resetTimer();
+            startTimer();
+          }
+        }
+      });
+
+      stopBtn.addEventListener("click", () => {
+        resetTimer();
+      });
+
+      function updateTime() {
+        const now = new Date();
+        let hours = now.getHours();
+        const ampm = hours >= 12 ? "PM" : "AM";
+        hours = hours % 12 || 12; // convert to 12-hour format
+        const minutes = now.getMinutes().toString().padStart(2, "0");
+        const seconds = now.getSeconds().toString().padStart(2, "0");
+        const dayOfWeek = [
+          "| Sunday ",
+          "| Monday ",
+          "| Tuesday",
+          "| Wednesday",
+          "| Thursday",
+          "| Friday",
+          "| Saturday",
+        ][now.getDay()];
+        currentTime.textContent = `${hours}:${minutes}:${seconds} ${ampm} ${dayOfWeek}`;
+      }
+
+      updateTime();
+      setInterval(updateTime, 1000);
+
+      function updateTimerValue(value) {
+        const timerLabel = document.getElementById("time-change");
+        const timerDisplay = document.getElementById("timer-25");
+        let time = "";
+        if (value < 60) {
+          time = `${value} `;
+        } else if (value >= 60 && value < 120) {
+          time = `1 : ${value - 60} `;
+        } else if (value >= 120 && value < 180) {
+          time = `2 : ${value - 120}`;
+        } else if (value >= 180 && value < 240) {
+          time = `3 : ${value - 180} `;
+        } else if (value == 240) {
+          time = `4 : 00`;
+        }
+        timerDisplay.textContent = time;
+        if (time <= 60) {
+          timerLabel.textContent = time * 25;
+        }
+        if (time > 60) {
+          const hours = Math.floor(time / 60);
+          const minutes = time % 60;
+          timerLabel.textContent = `${hours}:${minutes
+            .toString()
+            .padStart(2, "0")}`;
+        }
+        if (time < 10) {
+          time = time * 25;
+        }
+      }
+
+      function saveSettings() {
+        const timerValue = document.getElementById("timer").value;
+        const timerLabel = document.getElementById("timer-label");
+        timerLabel.textContent = `${timerValue} min`;
+        localStorage.setItem("timerValue", timerValue);
+      }
+    </script>
+  </body>
+</html>
