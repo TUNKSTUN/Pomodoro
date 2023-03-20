@@ -226,7 +226,7 @@
         popup.classList.add("hidden");
       });
       backbtn.addEventListener("click", function () {
-        popup.classList.add("hidden");
+        popup.classList.remove("hidden");
       });
 
       timeSettingBtn.addEventListener("click", function () {
@@ -347,7 +347,7 @@
               IntervalTime();
             }
           }
-        }, 1000);
+        }, 0.5);
       }
 
       function pauseTimer() {

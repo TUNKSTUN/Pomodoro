@@ -8,8 +8,14 @@ if (require('electron-squirrel-startup')) {
 }
 
 app.whenReady().then(() => {
-  createWindow();
-});
+  createWindow()
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow()
+    }
+  })
+})
 
 const createWindow = () => {
   // Create the browser window.
@@ -18,10 +24,6 @@ const createWindow = () => {
     height: 500,
     resizable: false,
     autoHideMenuBar: true,
-    transparent: true,
-    thickFrame: true,
-    movable: true,
-    hasShadow: false,
     webPreferences: {
       nodeIntegration: true,
       preload: path.join(__dirname, 'preload.js'),
