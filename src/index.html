@@ -157,21 +157,25 @@
       >
         <span
           class="flex absolute left-0 top-0 text-start text-stone-100 rounded-full w-6 h-6 p-2 m-2 text-md gap-1 cursor-pointer"
-          onclick="location.href='index.html'"
+          onclick="backSettings()"
           ><i class="fas fa-arrow-left text-md" id="back-btn"></i
         ></span>
         <hr />
         <h2 class="text-2xl font-bold mb-4">Settings</h2>
         <div>
-          <h1>Timer Duration | 25 min+</h1>
-          <div>
-            <p id="time-change">0</p>
+          <h1>Timer Duration | 5 min+</h1>
+          <div class="flex flex-col text-center justify-center items-center">
+            <div class="flex gap-2">
+
+            <p>20 +   </p>
+            <span id="time-change"> 5m</span>
+            </div>
             <input
               type="range"
               name="timer"
               id="timer"
-              min="1"
-              max="10"
+              min="0"
+              max="20"
               step="1"
               value="1"
               oninput="updateTimerValue(this.value)"
@@ -217,26 +221,27 @@
           div.style.display = "none";
         }
       }
-      const popup = document.getElementById("popup");
       const timeSettingBtn = document.getElementById("time-setting");
       const savebtn = document.getElementById("save-btn");
       const backbtn = document.getElementById("back-btn");
+      const popup = document.getElementById("popup");
 
       savebtn.addEventListener("click", function () {
         popup.classList.add("hidden");
       });
       backbtn.addEventListener("click", function () {
-        popup.classList.remove("hidden");
+        event.preventDefault();
+        popup.classList.add("hidden");
       });
 
       timeSettingBtn.addEventListener("click", function () {
         popup.classList.remove("hidden");
       });
 
+      const togglePopup = document.querySelector(".popup");
       const toggleSwitch = document.querySelector(".toggle");
       const body = document.querySelector("html");
       const toggleText = document.querySelector(".label");
-      const togglePopup = document.querySelector(".popup");
 
       const isDarkMode = localStorage.getItem("isDarkMode") === "true";
       if (isDarkMode) {
@@ -266,38 +271,35 @@
       let isBreakTime = false;
       let intervalId;
       let isRunning = false;
-      let timeLeft = slider.value * 25 * 60;
+      let timeLeft = (slider.value * 5 * 60) + 1200;
+      let interval;
 
-     function displayTimeLeft() {
-  let display;
-  if (timeLeft < 3600) {
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    display = `${minutes.toString().padStart(2, "0")}:${seconds
-      .toString()
-      .padStart(2, "0")}`;
-  } else {
-    const hours = Math.floor(timeLeft / 3600);
-    const minutes = Math.floor((timeLeft % 3600) / 60);
-    const seconds = timeLeft % 60;
-    display = `${hours.toString().padStart(2, "")}:${minutes
-      .toString()
-      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-  }
-  timerDisplay.textContent = display;
-}
-
-
-      function IntervalTime() {
-        if (timeLeft <= 0) {
-          clearInterval(countdown);
-          alert("Time's up!");
-          return;
+      function displayTimeLeft() {
+        let display;
+        const initialTime = 25 * 60; // initial time in seconds
+        const timeIncrement = 5 * 60; // time increment in seconds
+      
+        if (timeLeft < 3600) {
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+          display = `${minutes.toString().padStart(2, "0")}:${seconds
+            .toString()
+            .padStart(2, "0")}`;
+        } else {
+          const hours = Math.floor(timeLeft / 3600);
+          const minutes = Math.floor((timeLeft % 3600) / 60);
+          const seconds = timeLeft % 60;
+          display = `${hours.toString().padStart(2, "")}:${minutes
+            .toString()
+            .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
         }
+      
+        timerDisplay.textContent = display;
+        slider.value = (timeLeft - initialTime) / timeIncrement + 1;
       }
 
       slider.addEventListener("change", () => {
-        timeLeft = slider.value * 25 * 60;
+        timeLeft = (slider.value * 5 * 60) + 1200;
         displayTimeLeft();
         saveSettings();
       });
@@ -305,6 +307,7 @@
       function startTimer() {
         isRunning = true;
         startBtn.textContent = "Pause";
+        IntervalTime();
         intervalId = setInterval(() => {
           if (!isBreakTime) {
             timeLeft--;
@@ -317,14 +320,14 @@
               const interval = setInterval(() => {
                 document.getElementById("alarm").play();
                 i++;
-                if (i >= 10) {
+                if (i >= 5) {
                   clearInterval(interval);
+                  startNextCycle();
                 }
               }, 800);
               isBreakTime = true;
               timeLeft = breakTimeLeft;
               displayTimeLeft();
-              IntervalTime();
             }
           } else {
             breakTimeLeft--;
@@ -337,33 +340,48 @@
               const interval = setInterval(() => {
                 document.getElementById("alarm").play();
                 i++;
-                if (i >= 10) {
+                if (i >= 5) {
                   clearInterval(interval);
+                  startNextCycle();
+                }if(i<0){
+                  resetTimer();
                 }
-              }, 800);
+              }, 1000);
               isBreakTime = false;
-              timeLeft = 1500;
+              timeLeft = (slider.value * 5 * 60) + 1200;
               displayTimeLeft();
-              IntervalTime();
             }
           }
-        }, 0.5);
+        }, 0.1);
       }
-
+      
+      function startNextCycle() {
+        setTimeout(() => {
+          startTimer();
+        }, 5000);
+      }
+      
+      function IntervalTime() {
+        clearInterval(interval);
+        interval = setInterval(() => {
+          console.log("5 minute interval timer fired");
+        }, 5 * 60 * 1000);
+      }
+      
       function pauseTimer() {
         isRunning = false;
         startBtn.textContent = "Start";
         clearInterval(intervalId);
       }
-
+      
       function resetTimer() {
         isRunning = false;
         startBtn.textContent = "Start";
         clearInterval(intervalId);
-        timeLeft = slider.value * 25 * 60;
+        timeLeft = (slider.value * 5 * 60) + 1200;
         displayTimeLeft();
       }
-
+      
       startBtn.addEventListener("click", () => {
         if (isRunning) {
           pauseTimer();
@@ -372,16 +390,17 @@
             startTimer();
           } else {
             // Timer has already reached 00:00
-            // Reset the timer and start again
+            // Start the timer again
             resetTimer();
             startTimer();
           }
         }
       });
-
+      
       stopBtn.addEventListener("click", () => {
         resetTimer();
       });
+      
 
       function updateTime() {
         const now = new Date();
@@ -408,33 +427,27 @@
       function updateTimerValue(value) {
         const timerLabel = document.getElementById("time-change");
         const timerDisplay = document.getElementById("timer-25");
+        const interval = 5;
+      
         let time = "";
-        if (value < 60) {
-          time = `${value} `;
-        } else if (value >= 60 && value < 120) {
-          time = `1 : ${value - 60} `;
-        } else if (value >= 120 && value < 180) {
-          time = `2 : ${value - 120}`;
-        } else if (value >= 180 && value < 240) {
-          time = `3 : ${value - 180} `;
-        } else if (value == 240) {
-          time = `4 : 00`;
+        if (value <= 2) {
+          time = `${value * interval}m`;
+        } else {
+          const hours = Math.floor(value * interval / 60);
+          const minutes = (value * interval) % 60;
+          if (hours > 0) {
+            time = `${hours}h ${minutes}m`;
+          } else {
+            time = `${minutes}m`;
+          }
         }
         timerDisplay.textContent = time;
-        if (time <= 60) {
-          timerLabel.textContent = time * 25;
-        }
-        if (time > 60) {
-          const hours = Math.floor(time / 60);
-          const minutes = time % 60;
-          timerLabel.textContent = `${hours}:${minutes
-            .toString()
-            .padStart(2, "0")}`;
-        }
-        if (time < 10) {
-          time = time * 25;
-        }
+        timerLabel.textContent = time;
       }
+      
+      
+      
+      
 
       function saveSettings() {
         const timerValue = document.getElementById("timer").value;
@@ -442,6 +455,12 @@
         timerLabel.textContent = `${timerValue} min`;
         localStorage.setItem("timerValue", timerValue);
       }
+      function backSettings() {
+        const popup = document.getElementById("popup");
+        popup.classList.add("hidden");
+      }
+      
+      
     </script>
   </body>
 </html>
