@@ -2,7 +2,7 @@
 # 🍅 Pomodoro App
 
 This is a pomodoro app built with Electron that allows you to adjust the time and date, switch between light and dark mode themes, and keep track of your work sessions.
-
+![Alt text]([pomo.png](https://github.com/TUNKSTUN/Pomodoro/blob/master/pomo.png) "Pomodoro hero")
 ## How to Run the Application 🚀
 
 1.  Clone this repository to your local machine.
